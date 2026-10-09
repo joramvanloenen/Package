@@ -110,3 +110,30 @@
   .attachment-tabs [role=tab]{min-height:48px;font-size:13px;padding:12px 5px}
   .attachment-panel>.button{width:100%}
 }
+
+/* Colored folder tabs with a raised, clearly selected state. */
+.tabs,.attachment-tabs{gap:6px;padding-top:10px;border-bottom:2px solid #b4ad9d;background:#e8e2d4;align-items:end}
+.tabs [role=tab],.attachment-tabs [role=tab]{
+  --tab-tint:#f4e4b0;--tab-color:#edca51;
+  position:relative;min-width:0;min-height:48px;padding:12px 10px;
+  border:1px solid #27261f40;border-top:4px solid var(--tab-color);border-bottom:0;
+  border-radius:9px 9px 0 0;background:var(--tab-tint);color:#27261f;
+  font-weight:600;box-shadow:inset 0 -3px 0 #27261f0d;
+}
+.tabs [data-tab=message],.attachment-tabs #cameraMode{--tab-tint:#dce8da;--tab-color:#a7c6a1}
+.tabs [data-tab=photo],.attachment-tabs #imageMode{--tab-tint:#dbe9f1;--tab-color:#90bdd4}
+.tabs [data-tab=label]{--tab-tint:#f3ded6;--tab-color:#e5ab98}
+.tabs [role=tab]:hover,.attachment-tabs [role=tab]:hover{background:var(--tab-color)}
+.tabs [role=tab][aria-selected=true],.attachment-tabs [role=tab][aria-selected=true]{
+  background:var(--tab-color);color:#27261f;font-weight:700;border-color:#27261f80;
+  transform:translateY(-4px);box-shadow:0 4px 0 var(--tab-color),0 -2px 0 #27261f18;
+}
+.attachment-tabs{padding:10px 6px 0;border-radius:5px 5px 0 0}
+@media(max-width:700px), (max-width:1100px) and (pointer:coarse){
+  .tabs{gap:4px;padding:10px 12px 0}
+  .tabs [role=tab]{padding:10px 3px;font-size:10px;line-height:1.5}
+  .attachment-tabs [role=tab]{padding:12px 5px;font-size:13px}
+}
+@media(max-width:1100px) and (max-height:450px){
+  .tabs{padding-top:6px}.tabs [role=tab]{min-height:40px;padding:6px 3px}
+}
