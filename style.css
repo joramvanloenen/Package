@@ -95,3 +95,18 @@
 
 /* Toasts join the top layer so editor feedback is visible over modal dialogs. */
 #toast{margin:0;border:0;top:auto;right:auto}
+
+/* Attachment options are proper tabs; the Polaroid preview is shared. */
+.attachment-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;border-bottom:1px solid var(--line);margin:20px 0 0}
+.attachment-tabs [role=tab]{min-height:48px;padding:12px 8px;border-bottom:3px solid transparent;font-size:13px;color:var(--muted)}
+.attachment-tabs [aria-selected=true]{border-bottom-color:var(--ink);color:var(--ink);font-weight:700;background:#e8e2d4;border-radius:4px 4px 0 0}
+.attachment-panel{padding:16px 0 0;min-width:0}
+.attachment-panel p{margin-bottom:12px}
+.attachment-panel .button{min-height:44px}
+.photo-management{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin:12px 0}
+.photo-management .button,.photo-management .text-button{min-height:44px;font-size:12px}
+#pixelCanvas[data-editable=false]{pointer-events:none;touch-action:pan-y;cursor:default}
+@media(max-width:700px), (max-width:1100px) and (pointer:coarse){
+  .attachment-tabs [role=tab]{min-height:48px;font-size:13px;padding:12px 5px}
+  .attachment-panel>.button{width:100%}
+}

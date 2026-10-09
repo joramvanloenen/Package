@@ -16,6 +16,17 @@ await nodes.get('createBtn').click();assert.equal(nodes.get('composer').open,tru
 nodes.get('title').value='Test parcel';await nodes.get('title').fire('input');nodes.get('message').value='A little hello';await nodes.get('message').fire('input');
 await nodes.get('addStamp').click();assert.match(nodes.get('selectedMark').textContent,/stamp/);
 await nodes.get('pixelCanvas').fire('pointerdown',{clientX:100,clientY:100,pointerId:1});await nodes.get('pixelCanvas').fire('pointerup',{pointerId:1});assert.match(nodes.get('photoStatus').textContent,/Polaroid attached/);
+// Changing sources keeps the attachment and stops an in-flight camera request.
+let resolveCamera,stopped=0;
+Object.defineProperty(globalThis,'navigator',{configurable:true,value:{mediaDevices:{getUserMedia:()=>new Promise(resolve=>{resolveCamera=resolve;})}}});
+await nodes.get('cameraMode').click();assert.equal(nodes.get('cameraAttachment').hidden,false);assert.equal(nodes.get('drawTools').hidden,true);
+const opening=nodes.get('cameraBtn').click();
+await nodes.get('imageMode').click();assert.equal(nodes.get('imageAttachment').hidden,false);assert.equal(nodes.get('cameraAttachment').hidden,true);
+resolveCamera({getTracks:()=>[{stop(){stopped++;}}]});await opening;
+assert.equal(stopped,1);assert.equal(nodes.get('cameraPanel').hidden,true);assert.equal(nodes.get('cameraBtn').disabled,false);
+assert.match(nodes.get('photoStatus').textContent,/Polaroid attached/);
+await nodes.get('drawMode').click();assert.equal(nodes.get('drawTools').hidden,false);assert.equal(nodes.get('drawMode')['aria-selected'],'true');
+
 await nodes.get('packageForm').fire('submit');assert.equal(nodes.get('placementBanner').hidden,false);
 await nodes.get('jumpBtn').click();await nodes.get('goJump').click();await nodes.get('navPlace').click();assert.equal(nodes.get('placeCard').hidden,false);
 await nodes.get('confirmPlace').click();assert.equal(stored.title,'Test parcel');assert.equal(stored.message,'A little hello');assert.equal(stored.photo.length,4096);assert.equal(stored.decorations.length,1);assert.equal(nodes.get('reader').open,true);assert.equal(nodes.get('placementBanner').hidden,true);
