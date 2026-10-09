@@ -6,7 +6,7 @@ let draft=emptyDraft();try{const saved=JSON.parse(localStorage.getItem('package-
 let pixels=fromHex(draft.photo),stickerBits=new Uint8Array(1024),hasPhoto=!!draft.photo,ink=1,stickerInk=1,history=[],selectedMark=-1,placing=false,selectedSpot=null,stream=null,sourcePixels=null,readerPackage=null,toastTimer;
 const view={x:12,y:12,zoom:innerWidth<700?.83:1,level:0};
 const canvas=$('warehouseCanvas'),ctx=canvas.getContext('2d');let width=0,height=0,parcels=new Map(),hitBoxes=[],needsRender=true,total=0,loading=false,online=false,loadTimer,loadController,loadSequence=0;
-function toast(message){$('toast').textContent=message;$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('toast').classList.remove('show'),4500);}
+function toast(message){$('toast').textContent=message;$('toast').showPopover?.();$('toast').classList.add('show');clearTimeout(toastTimer);toastTimer=setTimeout(()=>{$('toast').classList.remove('show');$('toast').hidePopover?.();},4500);}
 function storeDraft(){draft.photo=hasPhoto?toHex(pixels):null;try{localStorage.setItem('package-draft-v1',JSON.stringify(draft));$('draftState').textContent='A draft is saved on this device.';}catch{$('draftState').textContent='Draft open here. Device storage is unavailable.';}}
 function fieldUpdate(){for(const key of ['title','sender','recipient','message','caption'])draft[key]=$(key).value;$('messageCount').textContent=draft.message.length;storeDraft();renderEditor();}
 for(const key of ['title','sender','recipient','message','caption']){$(key).value=draft[key];on(key,'input',fieldUpdate);}
@@ -76,3 +76,15 @@ on('aboutBtn','click',()=>$('about').showModal());on('closeAbout','click',()=>$(
 for(const id of ['reader','about','navigator'])$(id).addEventListener('click',e=>{if(e.target!==$(id))return;const r=$(id).getBoundingClientRect();if(e.clientX<r.left||e.clientX>r.right||e.clientY<r.top||e.clientY>r.bottom)$(id).close();});
 const query=new URLSearchParams(location.search);if(query.has('p')){view.x=Math.max(0,Math.min(239,Number(query.get('x'))||0));view.y=Math.max(0,Math.min(239,Number(query.get('y'))||0));view.level=Math.max(0,Math.min(3,Number(query.get('l'))||0));$('level').value=view.level;}
 paintBits($('pixelCanvas'),pixels,128);paintBits($('stickerCanvas'),stickerBits,32);renderEditor();resize();setInterval(()=>{if(!document.hidden&&!submitting)loadPackages();},15000);document.addEventListener('visibilitychange',()=>{if(document.hidden)stopCamera();else loadPackages();});window.addEventListener('beforeunload',stopCamera);
+
+// Keep modal actions above the software keyboard and browser chrome.
+function syncDialogViewport(){
+  const viewport=window.visualViewport;
+  const style=document.documentElement?.style;
+  style?.setProperty('--dialog-height',`${viewport?.height||window.innerHeight||800}px`);
+  style?.setProperty('--dialog-top',`${viewport?.offsetTop||0}px`);
+}
+syncDialogViewport();
+window.addEventListener('resize',syncDialogViewport);
+window.visualViewport?.addEventListener('resize',syncDialogViewport);
+window.visualViewport?.addEventListener('scroll',syncDialogViewport);
