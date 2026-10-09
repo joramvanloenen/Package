@@ -1,0 +1,1 @@
+export default function Home(){return <main style={{padding:48,fontFamily:'monospace'}}><h1>Package · Shared warehouse</h1><p>The public warehouse lives on GitHub Pages.</p><a href="https://joramvanloenen.github.io/Package/">Enter the warehouse →</a></main>}

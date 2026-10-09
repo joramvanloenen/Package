@@ -1,0 +1,7 @@
+import test from 'node:test';import assert from 'node:assert/strict';
+import {toHex,fromHex,thresholdPixels,isShelf,worldToIso,isoToWorld} from '../core.js';
+test('128px packed images round-trip every bit without changing size',()=>{const bits=new Uint8Array(16384);for(let i=0;i<bits.length;i++)bits[i]=i%7===0?1:0;const hex=toHex(bits);assert.equal(hex.length,4096);assert.deepEqual(fromHex(hex),bits);assert.match(hex,/^[0-9a-f]+$/);});
+test('32px custom stickers have a fixed packed representation',()=>{const bits=new Uint8Array(1024);bits[0]=1;bits[1023]=1;assert.equal(toHex(bits).length,256);assert.deepEqual(fromHex(toHex(bits),32),bits);});
+test('photographs become only black or white, including transparent pixels',()=>{const rgba=new Uint8ClampedArray([0,0,0,255,255,255,255,255,30,30,30,0,128,128,128,255]);assert.deepEqual([...thresholdPixels(rgba,2,128,false)],[1,0,0,0]);assert.ok([...thresholdPixels(rgba,2,128,true)].every(b=>b===0||b===1));});
+test('aisles remain empty and shelf capacity matches UI',()=>{let n=0;for(let x=0;x<240;x++)for(let y=0;y<240;y++)if(isShelf(x,y))n++;assert.equal(n*4,168000);assert.equal(isShelf(5,0),false);assert.equal(isShelf(0,7),false);assert.equal(isShelf(-1,0),false);});
+test('isometric picking recovers warehouse coordinates',()=>{for(const [x,y]of [[0,0],[239,239],[12,91],[28.5,120.75]]){const p=worldToIso(x,y),q=isoToWorld(p.x,p.y);assert.equal(q.x,x);assert.equal(q.y,y);}});
